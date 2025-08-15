@@ -127,7 +127,7 @@ a:hover {
 /* Hero Section */
 .hero-section {
   padding: 150px 0 100px;
-  background-color: var(--light-gray);
+  /* background-color: var(--light-gray); */
   position: relative;
   overflow: hidden;
 }
@@ -368,7 +368,7 @@ section {
 
 /* Contact Section */
 .contact-section {
-  background-color: var(--light-gray);
+  /* background-color: var(--light-gray); */
 }
 
 .contact-content {
