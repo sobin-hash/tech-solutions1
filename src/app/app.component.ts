@@ -6,9 +6,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// declare var gsap: any;
-// declare var ScrollTrigger: any;
-
 @Component({
   selector: 'app-root',
   standalone: true,
