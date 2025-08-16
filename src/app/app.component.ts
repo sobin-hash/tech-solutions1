@@ -1,15 +1,34 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  signal,
+  inject,
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 
 gsap.registerPlugin(ScrollTrigger);
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, ReactiveFormsModule, MatProgressSpinnerModule, FormsModule,MatSnackBarModule,MatInputModule,MatFormFieldModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -64,12 +83,88 @@ export class AppComponent implements OnInit, AfterViewInit {
   ];
 
   filteredProjects = this.projects;
+  isSendingRequest = signal(false);
+  private http = inject(HttpClient);
+  private snackBar = inject(MatSnackBar);
 
-  constructor() {}
+  constructor(private fb: FormBuilder) {
+    this.contactForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.email]],
+      phone: ['', [Validators.required]],
+      service: [''],
+      message: [''],
+    });
+  }
 
   ngOnInit() {
     // Initialize filtered projects
     this.filteredProjects = this.projects;
+  }
+
+  contactForm: FormGroup;
+  private scriptURL =
+    'https://script.google.com/macros/s/AKfycbyhf5_M5AAXTEdcSF2iqR3s1HnGW_JBf4fVM3JAPOjWrn4C7PJcdAIiwccteNXimlqBKw/exec';
+
+  // onSubmit() {
+  //   if (this.contactForm.invalid) {
+  //     this.contactForm.markAllAsTouched();
+  //     return;
+  //   }
+  //   console.log(this.contactForm.value);
+
+  //   const formData = new FormData();
+  //   formData.append("name", this.contactForm.get('name')?.value);
+  //   formData.append("email", this.contactForm.get('email')?.value);
+  //   formData.append("phone", this.contactForm.get('phone')?.value);
+  //   formData.append("service", this.contactForm.get('service')?.value);
+  //   formData.append("message", this.contactForm.get('message')?.value);
+
+  //   fetch(this.scriptURL, { method: "POST", body: formData })
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       if (data.success) {
+  //         alert("Message sent successfully!");
+  //         this.contactForm.reset();
+  //       } else {
+  //         alert("Failed to send message.");
+  //       }
+  //     })
+  //     .catch(err => alert("Error: " + err));
+  // }
+
+  onSubmit() {
+    if (this.contactForm.invalid) {
+      this.contactForm.markAllAsTouched();
+      return;
+    }
+    this.isSendingRequest.set(true);
+
+    const formData = new FormData();
+    Object.entries(this.contactForm.value).forEach(([key, value]) => {
+      formData.append(key, value as string);
+    });
+
+    this.http.post<any>(this.scriptURL, formData).subscribe({
+      next: (res) => {
+        this.isSendingRequest.set(false);
+        this.snackBar.open('✅ Form submitted successfully!', '❌', {
+          duration: 3000, // auto-close after 3s
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          panelClass: ['success-snackbar'] 
+        });
+      },
+      error: (err) => {
+          this.snackBar.open('❌ Failed to send message. Try again.', '❌', {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar'] 
+
+        });
+      },
+    });
   }
 
   ngAfterViewInit() {
@@ -95,8 +190,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         start: 'top 80%',
       },
     });
-
-
   }
   closeMenu() {
     this.isMobileMenuOpen = false;

@@ -127,3 +127,18 @@ body {
     transform: rotate(-45deg) translate(7px, -6px);
   }
 }
+
+/* target snackbar container */
+.success-snackbar {
+  background-color: #4caf50 !important; /* green */
+  color: #fff !important;
+  font-weight: 500;
+}
+.error-snackbar {
+  background-color: rgb(239, 24, 24) !important;
+  color: #fff !important;
+  font-weight: 500;
+}
+.white-spinner circle {
+  stroke: white !important; /* spinner stroke */
+}

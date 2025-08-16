@@ -594,4 +594,8 @@ main {
 .btn-primary-1:hover {
   background-color: #0066FF;
 }
-/* test */
+.success-snackbar {
+  background-color: #4caf50 !important; /* Material green */
+  color: white !important;
+  font-weight: 500;
+}
